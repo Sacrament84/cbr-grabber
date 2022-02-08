@@ -1,8 +1,13 @@
-<h1 align="center">CBR-BACKEND</h1>
-This is backend app on Flask for fetch and store data in database from https://cbr.ru/ API.
+<h1 align="center">CBR-Grabber</h1>
+This is Python app on Flask framework for fetch, store in database and show valute exchange rates from https://cbr.ru/ API.
 
-It takes takes the exchange rates for current month and store it in mysql database.
-Also it provide Database scheme and migrations.
+Backend part takes the exchange rates for current month and store it in mysql database.
+Frontend part takes stored data from database and show it in web page.
+Forntend part can send update query to backend part via  REST API
+
+Backend provide database schema and migrations
+
+Applications designed to run in k8s cluster
 
 # Installation
 ## Docker
