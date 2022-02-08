@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cbr-frontend
+  labels:
+    owner : Nikolai_Voloshin
+spec:
+  selector:
+    matchLabels:
+      app: cbr-frontend
+  template:
+    metadata:
+      labels:
+        app: cbr-frontend
+    spec:
+      containers:
+      - name: cbr-frontend
+        image: gcr.io/cbr-grabber/cbr-frontend-staging:latest
+        ports:
+          - containerPort: 80
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "100m"
+        env:
+        - name: mysql_user
+          valueFrom:
+            secretKeyRef:
+              name: mysql-staging-user
+              key: MYSQL_STAGING_USER
+        - name: mysql_password
+          valueFrom:
+            secretKeyRef:
+              name: mysql-staging-password
+              key: MYSQL_STAGING_PASSWORD
+        - name: mysql_host
+          valueFrom:
+            secretKeyRef:
+              name: mysql-staging-dbhost
+              key: MYSQL_STAGING_DBHOST
+        - name: mysql_db
+          valueFrom:
+            secretKeyRef:
+              name: mysql-staging-db
+              key: MYSQL_STAGING_DB
+        - name: be-url
+          valueFrom:
+            secretKeyRef:
+              name: be-url
+              key: be-url
+
+      - name: cloud-sql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:latest
+        command:
+          - "/cloud_sql_proxy"
+          - "-instances=cbr-grabber:europe-west3:staging-instance=tcp:3306"
+          - "-credential_file=/secrets/service_account.json"
+        securityContext:
+          runAsNonRoot: true
+        volumeMounts:
+        - name: sa-key-volume
+          mountPath: /secrets/
+          readOnly: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu:    "100m"
+      volumes:
+      - name: sa-key-volume
+        secret:
+          secretName: sa-key
