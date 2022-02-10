@@ -35,17 +35,22 @@ spec:
     command:
     - cat
     tty: true
+  - name: kubectl
+    image: line/kubectl-kustomize:latest
+    command:
+    - cat
+    tty: true
   - name: gcloud
     image: google/cloud-sdk:latest
     command:
     - cat
-    tty: true   
+    tty: true
     volumeMounts:
       - name: kaniko-secret
         mountPath: /secret
     env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /secret/kaniko-key.json         
+        value: /secret/kaniko-key.json
   - name: kaniko
     image: gcr.io/kaniko-project/executor:debug
     command:
@@ -62,7 +67,7 @@ spec:
       secret:
         secretName: kaniko-secret
   imagePullSecrets:
-  - name: jenkins-image-pull-secret      
+  - name: jenkins-image-pull-secret
 
 """
    }
@@ -117,7 +122,7 @@ spec:
                     container(name: 'kaniko', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
-                        #!/busybox/sh 
+                        #!/busybox/sh
                         /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:latest
                         """
                     }
@@ -136,7 +141,7 @@ spec:
                     container(name: 'kaniko', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
-                        #!/busybox/sh 
+                        #!/busybox/sh
                         /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:latest
                         """
                     }
@@ -155,7 +160,7 @@ spec:
                     container(name: 'kaniko', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
-                        #!/busybox/sh 
+                        #!/busybox/sh
                         /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:latest
                         """
                     }
@@ -174,15 +179,40 @@ spec:
                     container(name: 'kaniko', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
-                        #!/busybox/sh 
+                        #!/busybox/sh
                         /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:latest
                         """
                     }
                 }
             }
-        }                
-        
+        }
+        stage ('deploy backend to k8s staging enviroment') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                    container('kubectl') {
+                        sh """
+                               kustomize edit set imagetag gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:latest;
+                               kustomize build cbr-backend/kustomize/overlays/staging | kubectl apply --record -f -           
+                           """
+                    }
+                }
+            }
+        }
+        stage ('deploy frontend to k8s staging enviroment') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                    container('kubectl') {
+                        sh """
+                               kustomize edit set imagetag gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:latest;
+                               kustomize build cbr-backend/kustomize/overlays/staging | kubectl apply --record -f -           
+                           """
+                    }
+                }
+            }
+        }
     }
 }
-
-
