@@ -17,6 +17,7 @@ metadata:
   labels:
       run: jnlp
 spec:
+  serviceAccountName: jenkins-admin
   containers:
   - name: git
     image: gcr.io/cloud-builders/git
