@@ -191,7 +191,7 @@ spec:
                         sh 'pwd'
                         sh """
                         #!/busybox/sh 
-                        /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER
+                        /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:latest 
                         """
                     }
                 }
@@ -205,7 +205,7 @@ spec:
                 dir ('cbr-frontend/kustomize') {
                     container(name: 'kubectl') {
                         sh """
-                               sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
+                               sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/staging
                                kubectl rollout status deployment/staging-cbr-frontend -n staging
                                kubectl get services -o wide -n staging
