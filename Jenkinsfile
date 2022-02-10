@@ -16,6 +16,7 @@ kind: Pod
 metadata:
   labels:
       run: jnlp
+
 spec:
   serviceAccountName: jenkins-admin
   containers:
