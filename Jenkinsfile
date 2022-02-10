@@ -194,8 +194,10 @@ spec:
                 dir ('cbr-frontend/kustomize') {
                     container(name: 'kubectl') {
                         sh """
-                               sed -ie "s/gcr.io\/cbr-grabber\/cbr-frontend-staging:latest/gcr.io\/cbr-grabber\/cbr-frontend-prod\/cbr-frontend:latest/g" /base/deployment.yaml
-                               kustomize build overlays/staging | kubectl apply -f -
+                               sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:latest#g" base/deployment.yaml
+                               kubectl apply -k overlays/staging
+                               kubectl rollout status deployment/staging-cbr-frontend -n staging
+                               kubectl get services -o wide -n staging
                            """
 
                     }
