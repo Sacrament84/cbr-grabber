@@ -62,6 +62,17 @@ spec:
     env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
         value: /secret/kaniko-key.json
+  - name: kaniko-fe
+    image: gcr.io/kaniko-project/executor:debug
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+      - name: kaniko-secret
+        mountPath: /secret
+    env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/kaniko-key.json
   volumes:
     - name: kaniko-secret
       secret:
@@ -157,7 +168,7 @@ spec:
                     container('python-39-slim'){
                         sh 'python --version'
                     }
-                    container(name: 'kaniko', shell: '/busybox/sh') {
+                    container(name: 'kaniko-fe', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
                         #!/busybox/sh 
@@ -176,7 +187,7 @@ spec:
                     container('python-39-slim'){
                         sh 'python --version'
                     }
-                    container(name: 'kaniko', shell: '/busybox/sh') {
+                    container(name: 'kaniko-fe', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
                         #!/busybox/sh 
