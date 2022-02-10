@@ -7,7 +7,6 @@ pipeline {
      IMAGE_TAG = "gcr.io/${PROJECT}/${APP_NAME}:${env.BRANCH_NAME}.${env.BUILD_NUMBER}"
      JENKINS_CRED = "${PROJECT}"
      }
-
     agent {
     kubernetes {
       defaultContainer 'jnlp'
