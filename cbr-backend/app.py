@@ -31,13 +31,9 @@ class cbr(db.Model):
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 def parse(url):
-
     response = requests.get(url)
-
     inserts = []
-
     myroot = ET.fromstring(response.content)
-
     for valute in myroot.findall('Valute'):
        insert = {}
        cont = 0
@@ -59,21 +55,15 @@ def mysql(url):
    password = os.getenv('mysql_password'),
    host=os.getenv('mysql_host'),
    database=os.getenv('mysql_db'))
-
    values = [list(x.values()) for x in parse(url)]
-
    columns = [list(x.keys()) for x in parse(url)][0]
-
    values_str = ""
-
    for i, record in enumerate(values):
-
        val_list = []
        for v, val in enumerate(record):
            if type(val) == str:
                val = "'{}'".format(val.replace(",", "."))
            val_list += [ str(val) ]
-
        values_str += "(" + ', '.join( val_list ) + "),\n"
    values_str = values_str[:-2] + ";"
    table_name = "cbr"
@@ -87,7 +77,6 @@ def mysql(url):
        connection.commit()
 
 def refresh():
-
  for i in range(1, datetime.today().day + 1):
      i = ('{:02d}'.format(i))
      now = datetime.now()
