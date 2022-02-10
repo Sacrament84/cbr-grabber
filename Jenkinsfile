@@ -164,7 +164,7 @@ spec:
         }
         stage ('building docker image frontend - prod') {
             when {
-                branch 'prod'
+                branch 'main'
             }
             steps {
                 dir ('cbr-frontend') {
