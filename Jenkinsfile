@@ -191,11 +191,11 @@ spec:
                 branch 'dev'
             }
             steps {
-                dir ('cbr-frontend') {
+                dir ('cbr-frontend/kustomize') {
                     container(name: 'kubectl') {
                         sh """
                                kustomize edit set image gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:latest;
-                               kustomize build kustomize/overlays/staging | kubectl apply --record -f -
+                               kustomize build overlays/staging | kubectl apply --record -f -
                            """
 
                     }
