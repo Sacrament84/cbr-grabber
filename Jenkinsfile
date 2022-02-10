@@ -65,9 +65,6 @@ spec:
 """
    }
 }
-    environment {
-        JenkinsDockerGCRSecret = credentials('jenkins-docker-gcr-secret')
-   }
     stages {
         stage ('git clone - main') {
             when {
