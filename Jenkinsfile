@@ -35,6 +35,11 @@ spec:
     command:
     - cat
     tty: true
+  - name: kubectl
+    image: line/kubectl-kustomize:latest
+    command:
+    - cat
+    tty: true
   - name: gcloud
     image: google/cloud-sdk:latest
     command:
