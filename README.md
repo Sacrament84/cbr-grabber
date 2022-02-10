@@ -10,7 +10,7 @@ Backend provide database schema and migrations
 Applications designed to run in k8s cluster
 
 # Installation
-## Docker
+## Docker [deprecated]
 #### 1. Build Docker image
 #### 2.  Define variables in your system:
 - database_url (in format mysql://login:password@host/database)
