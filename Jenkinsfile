@@ -109,18 +109,6 @@ spec:
                 }
             }
         }
-        stage ('git clone - prod') {
-            when {
-                branch 'prod'
-            }
-            steps{
-                container('git'){
-                    git branch: 'prod',
-                        credentialsId: 'Rohan-Github-Account-Credentials',
-                        url: 'https://github.com/r4rohan/CI-CD-on-Kubernetes.git'
-                }
-            }
-        }
         stage ('building docker image backend - main') {
             when {
                 branch 'main'
