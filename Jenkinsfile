@@ -143,7 +143,7 @@ spec:
                              timeout(time: 1, unit: 'MINUTES') {
                                  script {
                                      waitForQualityGate()
-                                     if (QualityGate.status != 'OK') {
+                                     if (waitForQualityGate.status != 'OK') {
                                          error "Pipeline aborted due to a quality gate failure"
                                            }
                                         }
