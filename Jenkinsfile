@@ -123,7 +123,7 @@ spec:
                      withSonarQubeEnv('sonarqube') {
                          container('sonar-scanner') {
                              sh """
-                             sonar-scanner -sonar.projectKey=cbr-grabber -sonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/	
+                             sonar-scanner	
                              """
                         } 
                     }
