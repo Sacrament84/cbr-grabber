@@ -130,6 +130,40 @@ spec:
                 }
             }
         }
+        stage("Quality gate") {
+            when {
+                branch 'dev'
+            }
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+        stage ('sonar qube test code - production') {
+            when {
+                branch 'main'
+            }
+            steps {
+                dir ('cbr-backend') {
+                     withSonarQubeEnv('sonarqube') {
+                         container('sonar-scanner') {
+                             sh """
+                             sonar-scanner -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_main/ -Dsonar.projectBaseDir=/home/jenkins/agent/workspace
+                             """
+                        }
+                    }
+                }
+            }
+        }
+        stage("Quality gate") {
+            when {
+                branch 'dev'
+            }
+            steps {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+
+
     }
    
 }
