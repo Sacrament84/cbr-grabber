@@ -130,7 +130,7 @@ spec:
                 }
             }
         }
-        stage("Quality gate") {
+        stage("Quality gate development env") {
             when {
                 branch 'dev'
             }
@@ -154,9 +154,9 @@ spec:
                 }
             }
         }
-        stage("Quality gate") {
+        stage("Quality gate production env") {
             when {
-                branch 'dev'
+                branch 'main'
             }
             steps {
                 waitForQualityGate abortPipeline: true
