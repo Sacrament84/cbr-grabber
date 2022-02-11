@@ -116,7 +116,7 @@ spec:
         }
         stage ('sonar qube test code - dev') {
             when {
-                branch 'dev'
+                branch 'main'
             }
             steps {
                 dir ('cbr-backend') {
@@ -130,39 +130,30 @@ spec:
                 }
             }
         }
-        stage("Quality gate development env") {
-            when {
-                branch 'dev'
-            }
-            steps {
-                waitForQualityGate abortPipeline: true
-            }
-        }
         stage ('sonar qube test code - production') {
             when {
-                branch 'main'
+                branch 'dev'
             }
             steps {
                 dir ('cbr-backend') {
                      withSonarQubeEnv('sonarqube') {
                          container('sonar-scanner') {
                              sh """
-                             sonar-scanner -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_main/ -Dsonar.projectBaseDir=/home/jenkins/agent/workspace
-                             """
+                             sonar-scanner -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/ -Dsonar.projectName=cbr-grabber-staging -Dsonar.projectBaseDir=/home/jenkins/agent/workspace
+                             timeout(time: 1, unit: 'MINUTES') {
+                                 script {
+                                     def qg = waitForQualityGate()
+                                     if (qg.status != 'OK') {
+                                         error "Pipeline aborted due to a quality gate failure: ${qg.status}"
+                                           }
+                                        }
+                                     }
+                                  """ 
                         }
                     }
                 }
             }
         }
-        stage("Quality gate production env") {
-            when {
-                branch 'main'
-            }
-            steps {
-                waitForQualityGate abortPipeline: true
-            }
-        }
-
 
     }
    
