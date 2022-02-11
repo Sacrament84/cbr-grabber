@@ -142,9 +142,9 @@ spec:
                              sonar-scanner -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/ -Dsonar.projectName=cbr-grabber-staging -Dsonar.projectBaseDir=/home/jenkins/agent/workspace
                              timeout(time: 1, unit: 'MINUTES') {
                                  script {
-                                     def qg = waitForQualityGate()
-                                     if (qg.status != 'OK') {
-                                         error "Pipeline aborted due to a quality gate failure: ${qg.status}"
+                                     waitForQualityGate()
+                                     if (QualityGate.status != 'OK') {
+                                         error "Pipeline aborted due to a quality gate failure"
                                            }
                                         }
                                      }
