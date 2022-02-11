@@ -35,6 +35,11 @@ spec:
     command:
     - cat
     tty: true
+  - name: sonar-scanner
+    image: newtmitch/sonar-scanner
+    command:
+    - cat
+    tty: true
   - name: kubectl
     image: line/kubectl-kustomize:latest
     command:
@@ -109,6 +114,24 @@ spec:
                 }
             }
         }
+        stage('Sonarqube') {
+             environment {
+                sonar.projectKey=staging-cbr-grabbing:project
+                sonar.sources=cbr-grabber
+            }
+            steps {
+               dir('cbr-backend') {
+                  container('sonar-scanner'){
+                       withSonarQubeEnv('sonar-qube') {
+                       sh "/bin/sonar-scanner"
+                        }
+                          timeout(time: 1	, unit: 'MINUTES') {
+                          waitForQualityGate abortPipeline: true
+                      }
+                   }
+                }
+            }
+        }
         stage ('building docker image backend - main') {
             when {
                 branch 'main'
@@ -128,6 +151,7 @@ spec:
                 }
             }
         }
+/*
         stage ('building docker image backend - dev') {
             when {
                 branch 'dev'
@@ -223,3 +247,4 @@ spec:
         }
     }
 }
+*/
