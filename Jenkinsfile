@@ -114,37 +114,19 @@ spec:
                 }
             }
         }
-        stage('Sonarqube') {
-            steps {
-               dir('cbr-backend') {
-                  container('sonar-scanner'){
-                       withSonarQubeEnv('sonar-qube') {
-                       sh "/bin/sonar-scanner -sonar.projectKey=cbr-grabber -sonar.sources=cbr-backend"
-                        }
-                          timeout(time: 1, unit: 'MINUTES') {
-                          waitForQualityGate abortPipeline: true
-                    }
-                }
-             }
-          }
-        }
-        stage ('building docker image backend - main') {
+        stage ('sonar qube test code - dev') {
             when {
-                branch 'main'
+                branch 'dev'
             }
             steps {
                 dir ('cbr-backend') {
-                    container('python-39-slim'){
-                        sh 'python --version'
+                     withSonarQubeEnv('sonar-qube') {
+                         container('sonar-scanner') {
+                             sh """
+                             /bin/sonar-scanner -sonar.projectKey=cbr-grabber -sonar.sources=cbr-backend
+                             """
+                        } 
                     }
-                    container(name: 'kaniko', shell: '/busybox/sh') {
-                        sh 'pwd'
-                        sh """
-                        #!/busybox/sh
-                        /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:latest
-                        """
-                      }
-                   }
-               }
+                }
             }
-        }  
+        }
