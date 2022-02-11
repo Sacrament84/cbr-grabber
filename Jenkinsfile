@@ -115,20 +115,15 @@ spec:
             }
         }
         stage('Sonarqube') {
-             environment {
-                sonar.projectKey=staging-cbr-grabbing:project
-                sonar.sources=cbr-grabber
-            }
             steps {
                dir('cbr-backend') {
                   container('sonar-scanner'){
                        withSonarQubeEnv('sonar-qube') {
-                       sh "/bin/sonar-scanner"
+                       sh "/bin/sonar-scanner -sonar.projectKey=cbr-grabber -sonar.sources=cbr-backend"
                         }
-                          timeout(time: 1	, unit: 'MINUTES') {
+                          timeout(time: 1, unit: 'MINUTES') {
                           waitForQualityGate abortPipeline: true
-                      }
-                   }
+                    }
                 }
             }
         }
