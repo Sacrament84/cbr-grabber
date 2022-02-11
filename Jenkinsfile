@@ -143,7 +143,8 @@ spec:
                         #!/busybox/sh
                         /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:latest
                         """
-                    }
-                }
+                      }
+                   }
+               }
             }
-        }
+        }  
