@@ -120,7 +120,7 @@ spec:
             }
             steps {
                 dir ('cbr-backend') {
-                     withSonarQubeEnv('sonar-qube') {
+                     withSonarQubeEnv('sonarqube') {
                          container('sonar-scanner') {
                              sh """
                              /bin/sonar-scanner -sonar.projectKey=cbr-grabber -sonar.sources=cbr-backend
