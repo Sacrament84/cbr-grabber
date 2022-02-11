@@ -125,7 +125,8 @@ spec:
                           waitForQualityGate abortPipeline: true
                     }
                 }
-            }
+             }
+          }
         }
         stage ('building docker image backend - main') {
             when {
