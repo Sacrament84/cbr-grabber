@@ -116,7 +116,7 @@ spec:
         }
         stage ('sonar qube test code - dev') {
             when {
-                branch 'main'
+                branch 'dev'
             }
             steps {
                 dir ('cbr-backend') {
@@ -130,7 +130,7 @@ spec:
                 }
             }
         }
-        stage ('sonar qube test code - production') {
+        stage ('sonar qube QG status - dev') {
             when {
                 branch 'dev'
             }
@@ -138,16 +138,23 @@ spec:
                 dir ('cbr-backend') {
                      withSonarQubeEnv('sonarqube') {
                          container('sonar-scanner') {
+                            timeout(time: 1, unit: 'MINUTES') {
+                            waitForQualityGate abortPipeline: true }
+                        }
+                    }
+                }
+            }
+        }
+        stage ('sonar qube test code - production') {
+            when {
+                branch 'main'
+            }
+            steps {
+                dir ('cbr-backend') {
+                     withSonarQubeEnv('sonarqube') {
+                         container('sonar-scanner') {
                              sh """
-                             sonar-scanner -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/ -Dsonar.projectName=cbr-grabber-staging -Dsonar.projectBaseDir=/home/jenkins/agent/workspace
-                             timeout(time: 1, unit: 'MINUTES') {
-                                 script {
-                                     waitForQualityGate()
-                                     if (waitForQualityGate.status != 'OK') {
-                                         error "Pipeline aborted due to a quality gate failure"
-                                           }
-                                        }
-                                     }
+                             sonar-scanner -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/ -Dsonar.projectName=cbr-grabber-production -Dsonar.projectBaseDir=/home/jenkins/agent/workspace
                                   """ 
                         }
                     }
