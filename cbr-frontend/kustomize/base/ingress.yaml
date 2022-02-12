@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - grabber-staging.homeline.kg
-    secretName: cbr-staging-tls
+    - grabber.homeline.kg
+    secretName: cbr-production-tls
   rules:
-  - host: grabber-staging.homeline.kg
+  - host: grabber.homeline.kg
     http:
       paths:
       - pathType: Prefix

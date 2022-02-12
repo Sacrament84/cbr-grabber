@@ -1,0 +1,17 @@
+[
+    {
+        "op": "replace",
+        "path": "/spec/tls/0/hosts",
+        "value": "grabber-staging.homeline.kg"
+    }
+    {
+        "op": "replace",
+        "path": "/spec/tls/0/secretName",
+        "value": "grabber-staging-tls"
+    }
+    {
+        "op": "replace",
+        "path": "/spec/rules/0/host",
+        "value": "grabber-staging.homeline.kg"
+    }
+]

@@ -2,3 +2,9 @@ bases:
   - ../../base/
 namePrefix: production-
 namespace: production
+
+patches:
+- target:
+    kind: Ingress
+    name: production-cbr-frontend
+  path: ingress-patch.json
