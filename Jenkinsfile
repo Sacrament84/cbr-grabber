@@ -121,7 +121,8 @@ spec:
                              -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/ \
                              -Dsonar.projectName=cbr-grabber-staging \
                              -Dsonar.projectBaseDir=/home/jenkins/agent/workspace \
-                             -Dsonar.qualitygate.wait=true
+                             -Dsonar.qualitygate.wait=true \
+                             -Dsonar.projectKey=cbr-grabber-development:project
                                 """
                         }
                     }
@@ -141,7 +142,8 @@ spec:
                              -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_main/ \
                              -Dsonar.projectName=cbr-grabber-production \
                              -Dsonar.projectBaseDir=/home/jenkins/agent/workspace \
-                             -Dsonar.qualitygate.wait=true
+                             -Dsonar.qualitygate.wait=true \
+                             -Dsonar.projectKey=cbr-grabber-production:project
                                 """
                         }
                     }
