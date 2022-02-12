@@ -1,13 +1,7 @@
 pipeline {
     environment {
      PROJECT = "cbr-grabber"
-     APP_NAME = "cbr-grabber"
-     CLUSTER = "cbr-grabber"
-     CLUSTER_ZONE = "europe-west3"
-     IMAGE_TAG = "gcr.io/${PROJECT}/${APP_NAME}:${env.BRANCH_NAME}.${env.BUILD_NUMBER}"
-     JENKINS_CRED = "${PROJECT}"
      }
-
     agent {
     kubernetes {
       defaultContainer 'jnlp'
@@ -35,18 +29,39 @@ spec:
     command:
     - cat
     tty: true
+  - name: sonar-scanner
+    image: newtmitch/sonar-scanner
+    command:
+    - cat
+    tty: true
+  - name: kubectl
+    image: line/kubectl-kustomize:latest
+    command:
+    - cat
+    tty: true
   - name: gcloud
     image: google/cloud-sdk:latest
     command:
     - cat
-    tty: true   
+    tty: true
     volumeMounts:
       - name: kaniko-secret
         mountPath: /secret
     env:
       - name: GOOGLE_APPLICATION_CREDENTIALS
-        value: /secret/kaniko-key.json         
+        value: /secret/kaniko-key.json
   - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+      - name: kaniko-secret
+        mountPath: /secret
+    env:
+      - name: GOOGLE_APPLICATION_CREDENTIALS
+        value: /secret/kaniko-key.json
+  - name: kaniko-fe
     image: gcr.io/kaniko-project/executor:debug
     command:
     - /busybox/cat
@@ -62,7 +77,7 @@ spec:
       secret:
         secretName: kaniko-secret
   imagePullSecrets:
-  - name: jenkins-image-pull-secret      
+  - name: jenkins-image-pull-secret
 
 """
    }
@@ -93,33 +108,42 @@ spec:
                 }
             }
         }
-        stage ('git clone - prod') {
+        stage ('sonar qube test code - dev') {
             when {
-                branch 'prod'
+                branch 'dev'
             }
-            steps{
-                container('git'){
-                    git branch: 'prod',
-                        credentialsId: 'Rohan-Github-Account-Credentials',
-                        url: 'https://github.com/r4rohan/CI-CD-on-Kubernetes.git'
+            steps {
+                dir ('cbr-backend') {
+                     withSonarQubeEnv('sonarqube') {
+                         container('sonar-scanner') {
+                             sh """
+                             sonar-scanner \
+                             -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/ \
+                             -Dsonar.projectName=cbr-grabber-staging \
+                             -Dsonar.projectBaseDir=/home/jenkins/agent/workspace \
+                             -Dsonar.qualitygate.wait=true
+                                """
+                        }
+                    }
                 }
             }
         }
-        stage ('building docker image backend - main') {
+        stage ('sonar qube test code - production') {
             when {
                 branch 'main'
             }
             steps {
                 dir ('cbr-backend') {
-                    container('python-39-slim'){
-                        sh 'python --version'
-                    }
-                    container(name: 'kaniko', shell: '/busybox/sh') {
-                        sh 'pwd'
-                        sh """
-                        #!/busybox/sh 
-                        /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:latest
-                        """
+                     withSonarQubeEnv('sonarqube') {
+                         container('sonar-scanner') {
+                             sh """
+                             sonar-scanner \
+                             -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/ \
+                             -Dsonar.projectName=cbr-grabber-production \
+                             -Dsonar.projectBaseDir=/home/jenkins/agent/workspace \
+                             -Dsonar.qualitygate.wait=true
+                                """
+                        }
                     }
                 }
             }
@@ -136,8 +160,12 @@ spec:
                     container(name: 'kaniko', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
-                        #!/busybox/sh 
-                        /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:latest
+                        #!/busybox/sh
+                        /kaniko/executor --dockerfile Dockerfile \
+                        --context `pwd`/ --verbosity debug \
+                        --insecure --skip-tls-verify \
+                        --destination gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:$BUILD_NUMBER \
+                        --destination gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:latest
                         """
                     }
                 }
@@ -152,11 +180,38 @@ spec:
                     container('python-39-slim'){
                         sh 'python --version'
                     }
-                    container(name: 'kaniko', shell: '/busybox/sh') {
+                    container(name: 'kaniko-fe', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
-                        #!/busybox/sh 
-                        /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:latest
+                        #!/busybox/sh
+                        /kaniko/executor --dockerfile Dockerfile \
+                        --context `pwd`/ --verbosity debug \
+                        --insecure --skip-tls-verify \
+                        --destination gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:$BUILD_NUMBER \
+                        --destination gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:latest
+                        """
+                    }
+                }
+            }
+        }
+        stage ('building docker image backend - prod') {
+            when {
+                branch 'main'
+            }
+            steps {
+                dir ('cbr-backend') {
+                    container('python-39-slim'){
+                        sh 'python --version'
+                    }
+                    container(name: 'kaniko-fe', shell: '/busybox/sh') {
+                        sh 'pwd'
+                        sh """
+                        #!/busybox/sh
+                        /kaniko/executor --dockerfile Dockerfile \
+                        --context `pwd`/ --verbosity debug \
+                        --insecure --skip-tls-verify \
+                        --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:$BUILD_NUMBER \
+                        --destination gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:latest
                         """
                     }
                 }
@@ -171,18 +226,91 @@ spec:
                     container('python-39-slim'){
                         sh 'python --version'
                     }
-                    container(name: 'kaniko', shell: '/busybox/sh') {
+                    container(name: 'kaniko-fe', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
-                        #!/busybox/sh 
-                        /kaniko/executor --dockerfile Dockerfile --context `pwd`/ --verbosity debug --insecure --skip-tls-verify --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:latest
+                        #!/busybox/sh
+                        /kaniko/executor --dockerfile Dockerfile \
+                        --context `pwd`/ --verbosity debug \
+                        --insecure --skip-tls-verify \
+                        --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER \
+                        --destination gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:latest
                         """
                     }
                 }
             }
-        }                
-        
+        }
+        stage ('deploy backend to k8s staging enviroment') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                dir ('cbr-backend/kustomize') {
+                    container(name: 'kubectl') {
+                        sh """
+                               sed -ie "s#gcr.io/cbr-grabber/cbr-backend-staging:latest#gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:$BUILD_NUMBER#g" base/deployment.yaml
+                               kubectl apply -k overlays/staging
+                               kubectl rollout status deployment/staging-cbr-backend -n staging
+                               kubectl get services -o wide -n staging
+                           """
+
+                    }
+                }
+            }
+        }
+        stage ('deploy frontend to k8s staging enviroment') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                dir ('cbr-frontend/kustomize') {
+                    container(name: 'kubectl') {
+                        sh """
+                               sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
+                               kubectl apply -k overlays/staging
+                               kubectl rollout status deployment/staging-cbr-frontend -n staging
+                               kubectl get services -o wide -n staging
+                           """
+
+                    }
+                }
+            }
+        }
+        stage ('deploy backend to k8s production enviroment') {
+            when {
+                branch 'main'
+            }
+            steps {
+                dir ('cbr-backend/kustomize') {
+                    container(name: 'kubectl') {
+                        sh """
+                               sed -ie "s#gcr.io/cbr-grabber/cbr-backend-staging:latest#gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:$BUILD_NUMBER#g" base/deployment.yaml
+                               kubectl apply -k overlays/production
+                               kubectl rollout status deployment/production-cbr-backend -n production
+                               kubectl get services -o wide -n production
+                           """
+
+                    }
+                }
+            }
+        }
+        stage ('deploy frontend to k8s production enviroment') {
+            when {
+                branch 'main'
+            }
+            steps {
+                dir ('cbr-frontend/kustomize') {
+                    container(name: 'kubectl') {
+                        sh """
+                               sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-:latest#gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
+                               kubectl apply -k overlays/production
+                               kubectl rollout status deployment/production-cbr-frontend -n production
+                               kubectl get services -o wide -n production
+                           """
+
+                    }
+                }
+            }
+        }
     }
 }
-
-
