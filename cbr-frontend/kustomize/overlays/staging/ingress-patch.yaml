@@ -5,10 +5,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - staging-grabber.homeline.kg
+    - grabber-staging.homeline.kg
     secretName: cbr-staging-tls
   rules:
-  - host: staging-grabber.homeline.kg
+  - host: grabber-staging.homeline.kg
     http:
       paths:
       - pathType: Prefix
