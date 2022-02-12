@@ -4,7 +4,4 @@ namePrefix: staging-
 namespace: staging
 
 patches:
-- target:
-    kind: Ingress
-    name: staging-cbr-frontend
-  path: ingress-patch.json  
+ - ingress-patch.yaml
