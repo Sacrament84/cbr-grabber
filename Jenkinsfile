@@ -304,7 +304,7 @@ spec:
                 dir ('cbr-frontend/kustomize') {
                     container(name: 'kubectl') {
                         sh """
-                               sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-:latest#gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
+                               sed -ie "s#gcr.io/cbr-grabber/cbr-backend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/production
                                kubectl rollout status deployment/production-cbr-frontend -n production
                                kubectl get services -o wide -n production
