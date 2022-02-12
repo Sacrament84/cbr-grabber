@@ -138,7 +138,7 @@ spec:
                          container('sonar-scanner') {
                              sh """
                              sonar-scanner \
-                             -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_dev/ \
+                             -Dsonar.sources=/home/jenkins/agent/workspace/cbr-grabber_main/ \
                              -Dsonar.projectName=cbr-grabber-production \
                              -Dsonar.projectBaseDir=/home/jenkins/agent/workspace \
                              -Dsonar.qualitygate.wait=true
