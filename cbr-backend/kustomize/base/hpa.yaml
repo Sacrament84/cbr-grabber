@@ -10,8 +10,8 @@ spec:
       apiVersion: apps/v2beta1
       kind: Deployment
       name: cbr-backend
-    minReplicas: 2
-    maxReplicas: 4
+    minReplicas: 1
+    maxReplicas: 3
     metrics:
     - type: Resource
       resource:
