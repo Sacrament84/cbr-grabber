@@ -29,23 +29,23 @@ spec:
         - name: mysql_user
           valueFrom:
             secretKeyRef:
-              name: mysql-staging-user
-              key: MYSQL_STAGING_USER
+              name: mysql-user
+              key: MYSQL_USER
         - name: mysql_password
           valueFrom:
             secretKeyRef:
-              name: mysql-staging-password
-              key: MYSQL_STAGING_PASSWORD
+              name: mysql-password
+              key: MYSQL_PASSWORD
         - name: mysql_host
           valueFrom:
             secretKeyRef:
-              name: mysql-staging-dbhost
-              key: MYSQL_STAGING_DBHOST
+              name: mysql-dbhost
+              key: MYSQL_DBHOST
         - name: mysql_db
           valueFrom:
             secretKeyRef:
-              name: mysql-staging-db
-              key: MYSQL_STAGING_DB
+              name: mysql-db
+              key: MYSQL_DB
         - name: be-url
           valueFrom:
             secretKeyRef:
