@@ -205,7 +205,7 @@ spec:
                     container('python-39-slim'){
                         sh 'python --version'
                     }
-                    container(name: 'kaniko-fe', shell: '/busybox/sh') {
+                    container(name: 'kaniko', shell: '/busybox/sh') {
                         sh 'pwd'
                         sh """
                         #!/busybox/sh
