@@ -10,19 +10,14 @@ Backend provide database schema and migrations
 Applications designed to run in k8s cluster
 
 # Installation
-## Docker [deprecated]
-#### 1. Build Docker image
-#### 2.  Define variables in your system:
-- database_url (in format mysql://login:password@host/database)
-- mysql_user - database user
-- mysql_password - dabatase password
-- mysql_host - database host
-- mysql_db - database name
-
-#### 3. Start a docker container and forward port 5000 to it
-#### 4.  Backend provide REST API via http://host:5000/api/refresh for fetch new data from https://cbr.ru/ and store it to database.
-
 ## k8s GKE
+## Requirements:
+* k8s cluster running in GCP cloud provider
+* Jenkins CI/CD running in k8s cluster
+* Sonarqube running in k8s cluster or any server
+* Jenkins and sonarqube integration
+* Mysql databse running in GCP with sql proxy API enabled
+* Service account in k8s cluster with crossnamespace access to deployments, services, ingresess, hpa (defined in Jenkinsfile)
 ### 1. Define secrets in your cluster:
 * database_url (in format mysql://login:password@host/database)
 * mysql_user - database user
@@ -33,11 +28,7 @@ Applications designed to run in k8s cluster
 * staging for dev branch 
 * production for main branch
 ### 3. Create secret for Cloud Sql Proxy
+Application uses a mysql database running in GCP, so you need a secret for the cloud sql proxy.
 Create secret for google cloud sql proxy.
-
-If you use database on another cloud or own host you can skip this step
-### 4. Create database
-Create database in google cloud or in another cloud or own host
-### 5. Deploy to k8s with kustomize
-* kubectl apply -k kustomize/overlays/staging - for development enviroment 
-* kubectl apply -k kustomize/overlays/prodaction - for production enviroment 
+### 4. Create multibranch pipeline job in Jenkins 
+* Create multibranch pipeline in Jenkins using Jenkinsfile in repo
