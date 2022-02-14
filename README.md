@@ -1,4 +1,4 @@
-<h1 align="center">CBR-Grabber</h1>
+<h1>CBR-Grabber</h1>
 This is Python app on Flask framework for fetch, store in database and show valute exchange rates from https://cbr.ru/ API.
 
 Backend part takes the exchange rates for current month and store it in mysql database.
