@@ -11,7 +11,7 @@ Applications designed to run in k8s cluster
 
 # Installation
 ## k8s GKE
-Создание кластера и первичная настройка
+## Создание кластера и первичная настройка
 1. Создать проект в GCP
 2. Активировать API Kubernetes, Compute Engine, Cloud SQL
 3. Создать Сервис аккаунт и сервис ключ в этом аккаунте.
@@ -31,6 +31,6 @@ helm upgrade --install ingress-nginx ingress-nginx \
 14. Устанавливаем cert-manager для управления сертификатами, чтобы наше приложение работало по https протоколу.
 kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.0/cert-manager.yaml
 15. Деплоим issuer для сертификатов в кластер (kubectl apply -f yaml_other/issuer.yaml)
-Установка Jenkins
+## Установка Jenkins
 1. Деплоим файлы из папки jenkins (kubectl apply -f jenkins/)
 1a. Если Дженскинс был уже настроен ранее - отредактировать файл jenkins-pv.yaml и изменить имя диска покдлючаемого с настройками.
