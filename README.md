@@ -11,8 +11,26 @@ Applications designed to run in k8s cluster
 
 # Installation
 ## k8s GKE
+## Create Cluster and initial setup
+1. Create GCP Project
+2. Activate Kubernetes API, Compute Engine API, Cloud SQL API
+3. Create service account with admin access to k8s and Compute Engine. Create service json key in it
+4. On your local machine install gcloud cli, kubectl cli and terraform (https://cloud.google.com/sdk/docs/install) (https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) (https://learn.hashicorp.com/tutorials/terraform/install-cli)
+5. Git clone app code from github (git clone https://github.com/Sacrament84/cbr-grabber)
+7. Deploy Cluster and Mysql infrastructure from folders infra/cluster infra/mysql using terraform ( terraform init, terraform apply )
+8. Setup kubectl to work with your new cluster ( gcloud container clusters get-credentials cbr-grabber-gke --zone europe-west3-c )
+9. Deploy namespaces from infra/yaml_ns/ns.yaml ( kubectl apply -f infra/yaml_ns/ns.yaml )
+10. Create service account for SQL Proxy with access to Cloud SQL API and json key in it
+11. Create kubernetes secrets for production and staging enviroments with json key from previous step ( kubectl create secret generic sa-key --from-file=service_account.json=key.json -n production ) ( kubectl create secret generic sa-key --from-file=service_account.json=key.json -n staging )
+12. Install Helm on your host machine ( https://helm.sh/docs/intro/install/ )
+13. Install nginx ingress controller with helm ( helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace nginx )
+14. Take external ingress controller ip address and create dns records for production, staging, jenkins, grafana 
+15. Install cert-manager ( kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7.0/cert-manager.yaml )
+17. Deploy certificate issuer ( kubectl apply -f infra/yaml_other/issuer.yaml )
+## Install Jenkins
+1. Deploy files from jenkins dir ( kubectl apply -f infra/jenkins ) If Jenkins was installed edit jenkins-pv.yaml and change jenkins pv to attach it to new deploy
 ## Создание кластера и первичная настройка
-1. Создать проект в GCP
+1. Создать проект в GCP 
 2. Активировать API Kubernetes, Compute Engine, Cloud SQL
 3. Создать Сервис аккаунт и сервис ключ в этом аккаунте.
 4. На своей локальной машине настроить gcloud и kubectl используя сервис ключ проекта
