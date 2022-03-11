@@ -52,3 +52,20 @@ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.7
 ## Установка Jenkins
 1. Деплоим файлы из папки jenkins (kubectl apply -f jenkins/)
 1a. Если Дженскинс был уже настроен ранее - отредактировать файл jenkins-pv.yaml и изменить имя диска покдлючаемого с настройками.
+2. Настраиваем связку Дженкинс и Кластер через kubeconfig (редактируем адрес кластера в окружении и заводим секрет с конфигом кластера)
+3. Создаем секрет в кластере для kaniko для того чтобы он мог пушить имеджи в регистри
+(kubectl create secret generic kaniko-secret --from-file=kaniko-key.json=kaniko.key -n jenkins) где kaniko.key содержит ключ сервис аккаунта в GCP с доступом в имедж регистри.
+Развертка приложения
+Развернуть приложение можно сделав любое изменение в коде и запушив его в гитхаб. (в случае настроеннго вебхука)
+Либо вручную запустив сборку и деплой в Дженкинс
+
+Мониторинг
+1. Склонируем оператор Прометеуса - git clone https://github.com/prometheus-operator/kube-prometheus.git и перейдем в папку cd kube-prometheus
+2. Создадим необходимые ресурсы в кластере - kubectl create -f manifests/setup
+3. Развернем стак мониторинга - kubectl create -f manifests/
+4. Развернем игресс для удобного доступа к дашборду Графаны - kubectl apply -f yaml_other/ingress-grafana.yaml (Отредактируйте этот файл для указания своего домена)
+Логирование
+1. helm repo add grafana https://grafana.github.io/helm-charts
+2. helm repo update
+3. helm upgrade --install loki grafana/loki-stack --namespace=monitoring
+4. Добавляем источник данных в графане - http://loki.monitoring:3100
