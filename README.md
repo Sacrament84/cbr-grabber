@@ -29,6 +29,16 @@ Applications designed to run in k8s cluster
 17. Deploy certificate issuer ( kubectl apply -f infra/yaml_other/issuer.yaml )
 ## Install Jenkins
 1. Deploy files from jenkins dir ( kubectl apply -f infra/jenkins ) If Jenkins was installed edit jenkins-pv.yaml and change jenkins pv to attach it to new deploy
+## Monitoring
+1. Clone Repo Prometheus operator ( git clone https://github.com/prometheus-operator/kube-prometheus.git ) and go to kube-prometheus folder
+2. Create resources ( kubectl create -f manifests/setup )
+3. Deploy monitoring stack ( kubectl create -f manifests/ )
+4. Deploy grafana ingress ( kubectl apply -f yaml_other/ingress-grafana.yaml ) Edit this file to change grafana host
+## Logs
+1. Add helm repo ( helm repo add grafana https://grafana.github.io/helm-charts )
+2. Update repo ( helm repo update )
+3. Install Grafana-Loki stack ( helm upgrade --install loki grafana/loki-stack --namespace=monitoring )
+4. Go to Grafana setting and add loki source http://loki.monitoring:3100
 ## Создание кластера и первичная настройка
 1. Создать проект в GCP 
 2. Активировать API Kubernetes, Compute Engine, Cloud SQL
