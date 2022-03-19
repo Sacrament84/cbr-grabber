@@ -2,3 +2,6 @@ bases:
   - ../../base/
 namePrefix: staging-
 namespace: staging
+
+patches:
+- deployment-patch.yaml
