@@ -16,6 +16,14 @@ spec:
       containers:
       - name: cbr-frontend
         image: gcr.io/cbr-grabber/cbr-frontend-staging:latest
+        livenessProbe:
+          httpGet:
+           path: /
+           port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          periodSeconds: 10
+          failureThreshold: 3
         ports:
           - containerPort: 80
         resources:
