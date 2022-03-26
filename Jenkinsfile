@@ -252,7 +252,7 @@ spec:
                         sh """
                                sed -ie "s#gcr.io/cbr-grabber/cbr-backend-staging:latest#gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/staging
-                               kubectl rollout status deployment/staging-cbr-backend -n staging --timeout=3min || (echo "failed to deploy"; kubectl rollout undo deploy/staging-cbr-backend -n staging; exit 1)
+                               kubectl rollout status deployment/staging-cbr-backend -n staging --timeout=3m || (echo "failed to deploy"; kubectl rollout undo deploy/staging-cbr-backend -n staging; exit 1)
                            """
 
                     }
@@ -269,7 +269,7 @@ spec:
                         sh """
                                sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/staging
-                               kubectl rollout status deployment/staging-cbr-frontend -n staging --timeout=3min || (echo "failed to deploy"; kubectl rollout undo deploy/staging-cbr-frontend -n staging; exit 1)
+                               kubectl rollout status deployment/staging-cbr-frontend -n staging --timeout=3m || (echo "failed to deploy"; kubectl rollout undo deploy/staging-cbr-frontend -n staging; exit 1)
                            """
 
                     }
@@ -286,7 +286,7 @@ spec:
                         sh """
                                sed -ie "s#gcr.io/cbr-grabber/cbr-backend-staging:latest#gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/production
-                               kubectl rollout status deployment/production-cbr-backend -n production --timeout=3min || (echo "failed to deploy"; kubectl rollout undo deploy/production-cbr-backend -n production; exit 1)
+                               kubectl rollout status deployment/production-cbr-backend -n production --timeout=3m || (echo "failed to deploy"; kubectl rollout undo deploy/production-cbr-backend -n production; exit 1)
                            """
 
                     }
@@ -303,7 +303,7 @@ spec:
                         sh """
                                sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/production
-                               kubectl rollout status deployment/production-cbr-frontend -n production --timeout=3min || (echo "failed to deploy"; kubectl rollout undo deploy/production-cbr-frontend -n production; exit 1)
+                               kubectl rollout status deployment/production-cbr-frontend -n production --timeout=3m || (echo "failed to deploy"; kubectl rollout undo deploy/production-cbr-frontend -n production; exit 1)
                            """
 
                     }
