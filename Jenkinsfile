@@ -252,8 +252,7 @@ spec:
                         sh """
                                sed -ie "s#gcr.io/cbr-grabber/cbr-backend-staging:latest#gcr.io/cbr-grabber/cbr-backend-staging/cbr-backend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/staging
-                               kubectl rollout status deployment/staging-cbr-backend -n staging
-                               kubectl get services -o wide -n staging
+                               kubectl rollout status deployment/staging-cbr-backend -n staging || kubectl rollout undo deploy/staging-cbr-backend -n staging
                            """
 
                     }
@@ -270,8 +269,7 @@ spec:
                         sh """
                                sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-staging/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/staging
-                               kubectl rollout status deployment/staging-cbr-frontend -n staging
-                               kubectl get services -o wide -n staging
+                               kubectl rollout status deployment/staging-cbr-frontend -n staging || kubectl rollout undo deploy/staging-cbr-frontend -n staging
                            """
 
                     }
@@ -288,8 +286,7 @@ spec:
                         sh """
                                sed -ie "s#gcr.io/cbr-grabber/cbr-backend-staging:latest#gcr.io/cbr-grabber/cbr-backend-prod/cbr-backend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/production
-                               kubectl rollout status deployment/production-cbr-backend -n production
-                               kubectl get services -o wide -n production
+                               kubectl rollout status deployment/production-cbr-backend -n production || kubectl rollout undo deploy/production-cbr-backend -n production
                            """
 
                     }
@@ -306,8 +303,7 @@ spec:
                         sh """
                                sed -ie "s#gcr.io/cbr-grabber/cbr-frontend-staging:latest#gcr.io/cbr-grabber/cbr-frontend-prod/cbr-frontend:$BUILD_NUMBER#g" base/deployment.yaml
                                kubectl apply -k overlays/production
-                               kubectl rollout status deployment/production-cbr-frontend -n production
-                               kubectl get services -o wide -n production
+                               kubectl rollout status deployment/production-cbr-frontend -n production || kubectl rollout undo deploy/pruction-cbr-frontend -n production
                            """
 
                     }
