@@ -16,6 +16,14 @@ spec:
       containers:
       - name: cbr-backend
         image: gcr.io/cbr-grabber/cbr-backend-staging:latest
+        livenessProbe:
+          httpGet:
+           path: /healthz
+           port: 5000
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          periodSeconds: 10
+          failureThreshold: 3
         ports:
           - containerPort: 5000
         resources:

@@ -88,3 +88,8 @@ def refresh():
 def get_tasks():
     refresh()
     return "ok"
+
+@app.route('/healthz')
+def healthz():
+    return "OK"
+
