@@ -21,7 +21,7 @@ def connection():
 def index():
     try:
         c, conn = connection()
-        query = "SELECT date, ValuteID, NumCode, CharCode, Nominal, Name, Value from cbr ORDER BY name ASC, date ASC;"
+        query = "SELECT date, ValuteID, NumCode, CharCode, Nominal, Name, Value from cbr WHERE MONTH(date) = MONTH(CURRENT_DATE())AND YEAR(date) = YEAR(CURRENT_DATE()) ORDER BY name ASC, date ASC;"
         c.execute(query)
         data = c.fetchall()
         conn.close()
